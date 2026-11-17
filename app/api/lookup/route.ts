@@ -30,7 +30,7 @@ import {
   type LookupSuccess,
   type LookupError,
 } from "@/lib/seance";
-import { fetchWithTimeout, extractReadable } from "@/lib/seance-server";
+import { fetchWithTimeout, extractReadable, rewriteForAfterlife } from "@/lib/seance-server";
 
 /** Vercel function-duration ceiling (Hobby). Fits two sequential 20s ops (~40s) with margin. */
 export const maxDuration = 60;
@@ -204,7 +204,7 @@ export async function GET(request: Request): Promise<Response> {
     const success: LookupSuccess = {
       ok: true,
       title: article.title,
-      content: article.content,
+      content: rewriteForAfterlife(article.content, snapshotTimestamp),
       textContent: article.textContent,
       snapshotTimestamp,
       snapshotDate,

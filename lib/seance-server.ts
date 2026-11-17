@@ -155,3 +155,54 @@ export async function extractReadable(
     return null;
   }
 }
+
+/** Strip a Wayback prefix (https://web.archive.org/web/<ts>[xx_]/) to get the original URL. */
+function unwrapWayback(href: string): string {
+  const m = /^https?:\/\/web\.archive\.org\/web\/\d{1,14}[a-z_]*\/(.+)$/i.exec(href);
+  return m ? m[1] : href;
+}
+
+/**
+ * Keep visitors inside the afterlife.
+ *
+ * Links in a restored page point at the original (dead) web, so clicking one
+ * lands on a 404 or a modern redirect. Rewrite every http(s) link to run its
+ * own séance on the same day's archive, and load every image from the archive
+ * rather than the long-gone original host. In-page anchors (#...) are kept.
+ */
+export function rewriteForAfterlife(html: string, snapshotTimestamp: string): string {
+  try {
+    const day = snapshotTimestamp.slice(0, 8);
+    const dom = new JSDOM(`<body>${html}</body>`);
+    const doc = dom.window.document;
+
+    for (const a of Array.from(doc.querySelectorAll("a[href]"))) {
+      const href = a.getAttribute("href") ?? "";
+      if (href.startsWith("#")) continue;
+      const original = unwrapWayback(href);
+      if (!/^https?:\/\//i.test(original)) {
+        a.removeAttribute("href");
+        continue;
+      }
+      const q = new URLSearchParams({ url: original });
+      if (/^\d{8}$/.test(day)) q.set("timestamp", day);
+      a.setAttribute("href", `/results?${q.toString()}`);
+      a.removeAttribute("target");
+      a.setAttribute("title", "Summon this page too");
+    }
+
+    for (const img of Array.from(doc.querySelectorAll("img"))) {
+      img.removeAttribute("srcset");
+      const src = img.getAttribute("src") ?? "";
+      const original = unwrapWayback(src);
+      if (/^https?:\/\//i.test(original)) {
+        img.setAttribute("src", `https://web.archive.org/web/${snapshotTimestamp}im_/${original}`);
+      }
+      img.setAttribute("loading", "lazy");
+    }
+
+    return doc.body.innerHTML;
+  } catch {
+    return html;
+  }
+}
