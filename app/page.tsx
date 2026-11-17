@@ -30,7 +30,11 @@ export default function Home() {
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const url = value.trim();
+    let url = value.trim();
+    // Let people paste a bare domain like "vine.co" without typing https://
+    if (url && !/^[a-z][a-z0-9+.-]*:\/\//i.test(url) && url.includes(".")) {
+      url = `https://${url}`;
+    }
     if (!isValidUrl(url)) {
       setError(msg("INVALID_URL"));
       return;

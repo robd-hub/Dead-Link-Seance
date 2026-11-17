@@ -34,7 +34,7 @@ Lean Next.js App Router + TypeScript build for a Halloween Wayback-restore app. 
     - Sanitize Readability `content` through DOMPurify before it reaches the client
     - _Requirements: 2.5, 3.2, 3.3, 3.4, 5.1_
 
-- [ ] 3. Lookup + extract API route
+- [x] 3. Lookup + extract API route
   - [ ] 3.1 Implement `app/api/lookup/route.ts` (Route Handler, GET)
     - `export const maxDuration = 60` (Hobby ceiling; fits two sequential 20s ops with margin)
     - Validate `url` with `isValidUrl` → `INVALID_URL` on failure; read optional `timestamp` hint and reject a malformed hint (present but not exactly 8 digits) as `INVALID_URL`
@@ -46,7 +46,7 @@ Lean Next.js App Router + TypeScript build for a Halloween Wayback-restore app. 
     - Return success envelope `{ok, title, content, textContent, snapshotTimestamp, snapshotDate, archiveUrl}` (`archiveUrl` is the replay URL without `id_`)
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 3.1, 3.2, 3.3, 3.4, 6.1, 6.2, 6.3, 6.4, 6.5, 7.3_
 
-- [ ] 4. Medium API route
+- [x] 4. Medium API route
   - [ ] 4.1 Implement `app/api/medium/route.ts` (Route Handler, POST)
     - `export const maxDuration = 30` (fits one 20s AI timeout with margin)
     - If `AI_API_KEY` unset/empty → return `{ok:true, skipped:true, summary:null, causeOfDeath:null}` without calling the AI
@@ -56,7 +56,7 @@ Lean Next.js App Router + TypeScript build for a Halloween Wayback-restore app. 
     - Timeout/error/non-2xx/unparseable/empty → `{ok:false}` (graceful, no raw error); success → `{ok:true, summary, causeOfDeath}`
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 5.7_
 
-- [ ] 5. Home page (ouija board)
+- [x] 5. Home page (ouija board)
   - [ ] 5.1 Implement `app/page.tsx` (`"use client"`)
     - `Ouija_Input` (`<input type="text" maxLength={2048}>`) + `Summon_Button`; `Summon_Button` ≥44×44 px touch target, layout fits within ≤768 px viewport with no horizontal scrolling
     - Render the three `EXAMPLE_DEAD_LINKS` from `lib/seance.ts`; selecting one populates both the input URL and the Timestamp_Hint
@@ -64,7 +64,7 @@ Lean Next.js App Router + TypeScript build for a Halloween Wayback-restore app. 
     - Valid → `router.push('/results?url=' + encodeURIComponent(value) + (hint ? '&timestamp=' + hint : ''))`
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
 
-- [ ] 6. Results page
+- [x] 6. Results page
   - [ ] 6.1 Implement `app/results/page.tsx` (`"use client"`)
     - Read `url` and optional `timestamp` from `useSearchParams()`
     - `useEffect`: `fetch('/api/lookup?url=...&timestamp=...')`; on `ok:true` store title/content/textContent/snapshotTimestamp/snapshotDate/archiveUrl, then POST `/api/medium` with `{textContent, title}`; on `ok:false` store the in-theme error and stop
@@ -81,7 +81,7 @@ Lean Next.js App Router + TypeScript build for a Halloween Wayback-restore app. 
     - How Kiro was used: steering `project.md` house rules + spec-driven workflow (requirements → design → tasks)
     - _Requirements: 8.1, 8.2, 8.3_
 
-- [ ] 8. Checkpoint — build and verify
+- [x] 8. Checkpoint — build and verify
   - Ensure `npm run build` succeeds and all non-optional tests pass, ask the user if questions arise.
 
 - [ ]* 9. Add property-based test suite (optional, not required for v1)
