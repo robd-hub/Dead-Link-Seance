@@ -1,0 +1,156 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Initialize Next.js App Router + TypeScript project and install dependencies": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846891559
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846994837
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794847837001
+      }
+    ],
+    "1.2 Add `.gitignore` and `.env.example`": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846891828
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794847839280
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794847968783
+      }
+    ],
+    "2.1 Implement `lib/seance.ts` (isomorphic — importable by client and server)": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846891879
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794848044876
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794848802594
+      }
+    ],
+    "2.2 Implement `lib/seance-server.ts` (server-only — imported only by Route Handlers)": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846891960
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794848802676
+      },
+      {
+        "executionId": "435a0cdf-1217-44a8-8434-6195708f8fdf",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794849925439
+      },
+      {
+        "executionId": "435a0cdf-1217-44a8-8434-6195708f8fdf",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794850283530
+      }
+    ],
+    "3.1 Implement `app/api/lookup/route.ts` (Route Handler, GET)": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846892006
+      },
+      {
+        "executionId": "435a0cdf-1217-44a8-8434-6195708f8fdf",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794850300781
+      }
+    ],
+    "4.1 Implement `app/api/medium/route.ts` (Route Handler, POST)": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846892053
+      }
+    ],
+    "5.1 Implement `app/page.tsx` (`\"use client\"`)": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846892117
+      }
+    ],
+    "6.1 Implement `app/results/page.tsx` (`\"use client\"`)": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846892185
+      }
+    ],
+    "7.1 Write `README.md`": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846892248
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794848002921
+      },
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794848037367
+      }
+    ],
+    "8. Checkpoint — build and verify": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794846892342
+      }
+    ],
+    "1. Project scaffold and config": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794847968823
+      }
+    ],
+    "7. README.md": [
+      {
+        "executionId": "ef424406-1bce-4e46-a662-edf6d25c3b43",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794848037445
+      }
+    ],
+    "2. Shared lib (isomorphic helpers + server-only extraction)": [
+      {
+        "executionId": "435a0cdf-1217-44a8-8434-6195708f8fdf",
+        "chatSessionId": "sess_6127fa3c-ac7c-44d1-8fc0-29a1841213b4",
+        "timestamp": 1794850283589
+      }
+    ]
+  }
+}
