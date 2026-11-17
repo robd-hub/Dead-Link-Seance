@@ -41,7 +41,9 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
   const [medium, setMedium] = useState<MediumResponse | null>(null);
   const [mediumLoading, setMediumLoading] = useState(false);
   // "auto" picks the original look for pages that kept very little text.
-  const [view, setView] = useState<"auto" | "readable" | "original" | "reborn">("auto");
+  const [view, setView] = useState<"auto" | "readable" | "original" | "reborn" | "compare">("auto");
+  // Then-vs-now slider position: % of the width that shows the old page.
+  const [split, setSplit] = useState(50);
   const [reborn, setReborn] = useState<
     | { phase: "idle" }
     | { phase: "loading" }
@@ -121,9 +123,9 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
 
   const { page } = state;
 
-  async function reincarnate() {
+  async function reincarnate(target: "reborn" | "compare" = "reborn") {
     if (state.phase !== "done") return;
-    setView("reborn");
+    setView(target);
     setReborn({ phase: "loading" });
     try {
       const res = await fetch("/api/reincarnate", {
@@ -212,10 +214,78 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
         >
           ✨ Reincarnate it today
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeView === "compare"}
+          className={`${styles.viewTab} ${styles.rebornTab}`}
+          onClick={() => (reborn.phase === "idle" ? reincarnate("compare") : setView("compare"))}
+        >
+          ⚖️ Then vs now
+        </button>
       </div>
 
-      {activeView === "reborn" ? (
-        reborn.phase === "done" ? (
+      {activeView === "reborn" || activeView === "compare" ? (
+        reborn.phase === "done" && activeView === "compare" ? (
+          <>
+            <label className={styles.compareSlider}>
+              <span>{year}</span>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={split}
+                onChange={(e) => setSplit(Number(e.target.value))}
+                aria-label={`Slide between ${year} and today`}
+              />
+              <span>Today</span>
+            </label>
+            <div className={styles.timeWindow}>
+              <div className={styles.windowBar} aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <em>{page.title || url} · {year} vs today</em>
+              </div>
+              <div className={styles.compareStage}>
+                <iframe
+                  className={styles.compareLayer}
+                  srcDoc={reborn.html}
+                  title={`${page.title || url}, reincarnated as a modern site`}
+                  sandbox=""
+                />
+                <div
+                  className={styles.compareTop}
+                  style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }}
+                >
+                  <iframe
+                    className={styles.compareLayer}
+                    src={originalSrc}
+                    title={`${page.title || url} as it looked in ${year}`}
+                    referrerPolicy="no-referrer"
+                    sandbox="allow-scripts allow-same-origin"
+                  />
+                </div>
+                <div className={styles.compareDivider} style={{ left: `${split}%` }} aria-hidden="true">
+                  <span>⇆</span>
+                </div>
+                <span className={`${styles.compareLabel} ${styles.compareLabelLeft}`}>👻 {year}</span>
+                <span className={`${styles.compareLabel} ${styles.compareLabelRight}`}>✨ Today</span>
+              </div>
+            </div>
+            <p className={styles.rebornNote}>
+              Drag the slider to watch the page come back from the dead.
+              <br />
+              <a className={styles.linkButton} href={downloadHref(reborn.html)} download={downloadName(url)}>
+                Download the reborn page
+              </a>
+              {" · "}
+              <button type="button" className={styles.linkButton} onClick={() => reincarnate("compare")}>
+                Reincarnate again
+              </button>
+            </p>
+          </>
+        ) : reborn.phase === "done" ? (
           <>
             <div className={styles.timeWindow}>
               <div className={styles.windowBar} aria-hidden="true">
@@ -235,7 +305,11 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
             <p className={styles.rebornNote}>
               An AI imagined this relaunch from the old page&apos;s words. Each
               summoning is different.{" "}
-              <button type="button" className={styles.linkButton} onClick={reincarnate}>
+              <a className={styles.linkButton} href={downloadHref(reborn.html)} download={downloadName(url)}>
+                Download it
+              </a>
+              {" · "}
+              <button type="button" className={styles.linkButton} onClick={() => reincarnate()}>
                 Reincarnate again
               </button>
             </p>
@@ -243,7 +317,11 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
         ) : reborn.phase === "error" ? (
           <div className={styles.card} role="alert" style={{ textAlign: "center" }}>
             <p className={styles.summary}>{reborn.message}</p>
-            <button type="button" className={styles.linkButton} onClick={reincarnate}>
+            <button
+              type="button"
+              className={styles.linkButton}
+              onClick={() => reincarnate(activeView === "compare" ? "compare" : "reborn")}
+            >
               Try again
             </button>
           </div>
@@ -292,6 +370,19 @@ function ResultsFromQuery() {
   const url = params.get("url") ?? "";
   const timestamp = params.get("timestamp");
   return <Results key={`${url}|${timestamp ?? ""}`} url={url} timestamp={timestamp} />;
+}
+
+/** The reborn page as a downloadable file (it is one self-contained HTML document). */
+function downloadHref(html: string): string {
+  return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
+}
+
+function downloadName(url: string): string {
+  let host = "dead-site";
+  try {
+    host = new URL(url).hostname.replace(/^www\./, "") || host;
+  } catch {}
+  return `${host.replace(/[^a-z0-9.-]/gi, "-")}-reborn.html`;
 }
 
 function LoadingGhost() {

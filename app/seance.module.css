@@ -595,3 +595,85 @@
   text-underline-offset: 2px;
   cursor: pointer;
 }
+
+/* Then vs now: the old page sits on top, clipped by the slider */
+.compareStage {
+  position: relative;
+  height: min(80vh, 900px);
+  background: #fff;
+}
+
+.compareLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+.compareTop {
+  position: absolute;
+  inset: 0;
+}
+
+.compareDivider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #7b3fe4, #e0661b);
+  box-shadow: 0 0 14px rgba(140, 60, 200, 0.8);
+  pointer-events: none;
+}
+
+.compareDivider span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #7b3fe4, #e0661b);
+  box-shadow: 0 0 18px rgba(140, 60, 200, 0.7);
+}
+
+.compareLabel {
+  position: absolute;
+  top: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: #fff;
+  background: rgba(20, 16, 30, 0.8);
+  pointer-events: none;
+}
+
+.compareLabelLeft { left: 10px; }
+.compareLabelRight { right: 10px; }
+
+.compareSlider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.compareSlider input {
+  flex: 1;
+  min-height: 44px;
+  accent-color: #b04fe0;
+  cursor: ew-resize;
+}
+
+a.linkButton {
+  display: inline-flex;
+  align-items: center;
+}
