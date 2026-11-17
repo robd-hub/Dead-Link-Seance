@@ -227,8 +227,8 @@ Three famous discontinued products, each carrying a Timestamp_Hint (an 8-digit Y
 | Site | URL | Timestamp_Hint | Shutdown |
 |------|-----|----------------|----------|
 | Google Reader | `https://www.google.com/reader/` | `20120601` | July 2013 |
-| Vine | `https://vine.co/` | `20150601` | January 2017 |
-| Google+ | `https://plus.google.com/` | `20160601` | April 2019 |
+| GeoCities | `http://www.geocities.com/` | `20090601` | October 2009 |
+| Google Wave | `https://wave.google.com/about.html` | `20100601` | April 2012 |
 
 **Verification step (honesty note):** these are selected for guaranteed snapshot availability, but the implementation **must** verify each resolves to a real snapshot near its Timestamp_Hint at dev time (call the availability endpoint for each with the hint). If any is found not to resolve near its date, swap it for another famous dead site — e.g., a Geocities page (`https://geocities.com/` or a specific GeoCities neighborhood URL) with its own alive-era date. The design does not assume availability; it verifies.
 

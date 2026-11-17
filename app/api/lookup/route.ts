@@ -57,6 +57,11 @@ function statusForKind(kind: InThemeKind): number {
 }
 
 /** Build an in-theme error response envelope; never leaks raw error text. */
+/** Today's date as YYYYMMDD (UTC), used when we have no better timestamp. */
+function todayStamp(): string {
+  return new Date().toISOString().slice(0, 10).replace(/-/g, "");
+}
+
 function errorResponse(kind: InThemeKind): Response {
   const body: LookupError = {
     ok: false,
@@ -114,71 +119,65 @@ export async function GET(request: Request): Promise<Response> {
       availabilityUrl += "&timestamp=" + hint;
     }
 
-    // 4. Fetch availability with a 20s timeout. On throw, map the error to an
-    //    in-theme kind (TIMEOUT → 504, UNREACHABLE → 502) (Reqs 2.5, 6.3, 6.4).
-    let availabilityResp: Response;
+    // 4. Ask the availability API for the closest snapshot. This API is known
+    //    to return an empty answer now and then even for well-archived pages,
+    //    so any failure here is NOT final: we fall back to asking Wayback
+    //    directly (step 6), which redirects to the nearest real snapshot.
+    let closestTimestamp: string | undefined;
+    let closestReplayUrl: string | undefined;
     try {
-      availabilityResp = await fetchWithTimeout(availabilityUrl, {}, 20000);
-    } catch (err) {
-      return errorResponse(mapErrorToInTheme(err));
-    }
-    if (!availabilityResp.ok) {
-      return errorResponse("UNREACHABLE");
-    }
-
-    // 5. Parse the availability JSON and locate the closest snapshot. The
-    //    availability API returns the closest-to-hint (or most recent when no
-    //    hint) as `archived_snapshots.closest`; an empty/missing object means
-    //    nothing is archived → NOT_FOUND (Reqs 2.2, 2.4, 6.2).
-    let data: AvailabilityResponse;
-    try {
-      data = (await availabilityResp.json()) as AvailabilityResponse;
+      const availabilityResp = await fetchWithTimeout(availabilityUrl, {}, 15000);
+      if (availabilityResp.ok) {
+        const data = (await availabilityResp.json()) as AvailabilityResponse;
+        const closest = data?.archived_snapshots?.closest;
+        if (closest && closest.timestamp && closest.available === true) {
+          // 5. selectSnapshot keeps behaviour consistent with the spec.
+          const selected = selectSnapshot(
+            [{ timestamp: closest.timestamp, url: closest.url, available: true }],
+            hint,
+          );
+          closestTimestamp = selected?.timestamp;
+          closestReplayUrl = selected?.url;
+        }
+      }
     } catch {
-      return errorResponse("UNREACHABLE");
+      // fall through to the direct lookup
     }
 
-    const closest = data?.archived_snapshots?.closest;
-    if (!closest || !closest.timestamp || closest.available !== true) {
-      return errorResponse("NOT_FOUND");
-    }
-
-    // 6. Select/confirm the snapshot. The availability API already returns the
-    //    best snapshot, but `selectSnapshot` keeps behavior consistent and
-    //    generalizes to multiple snapshots if the API ever returns them.
-    const selected = selectSnapshot(
-      [
-        {
-          timestamp: closest.timestamp,
-          url: closest.url,
-          available: closest.available,
-        },
-      ],
-      hint,
-    );
-    if (!selected || !selected.timestamp) {
-      return errorResponse("NOT_FOUND");
-    }
-    const snapshotTimestamp = selected.timestamp;
-
-    // 7. Build the raw snapshot URL via the `id_` trick and fetch it with a
-    //    20s timeout. The original visitor URL is preserved verbatim (the
-    //    `id_` marker goes immediately after the timestamp) (Req 3.1, 3.3).
-    const rawUrl = buildRawSnapshotUrl(snapshotTimestamp, url);
+    // 6. Fetch the raw snapshot with the `id_` trick. With no availability
+    //    answer we use the hint (or today) as the timestamp; Wayback redirects
+    //    to the nearest capture it holds, and the final URL tells us which.
+    const requestedTimestamp = closestTimestamp ?? hint ?? todayStamp();
+    const rawUrl = buildRawSnapshotUrl(requestedTimestamp, url);
     let rawResp: Response;
     try {
       rawResp = await fetchWithTimeout(rawUrl, {}, 20000);
     } catch (err) {
       return errorResponse(mapErrorToInTheme(err));
     }
-    if (!rawResp.ok) {
-      return errorResponse("UNREACHABLE");
+    if (rawResp.status === 404) {
+      return errorResponse("NOT_FOUND");
     }
+    if (!rawResp.ok) {
+      return errorResponse(closestTimestamp ? "UNREACHABLE" : "NOT_FOUND");
+    }
+
+    // 7. The real snapshot timestamp comes from the final (post-redirect) URL.
+    const finalMatch = /\/web\/(\d{14})id_\//.exec(rawResp.url || "");
+    const snapshotTimestamp =
+      finalMatch?.[1] ?? closestTimestamp ?? requestedTimestamp;
+    const selected = {
+      url:
+        finalMatch || !closestReplayUrl
+          ? `https://web.archive.org/web/${snapshotTimestamp}/${url}`
+          : closestReplayUrl,
+    };
 
     // 8. Extract the readable article. `extractReadable` never throws — it
     //    returns null on any jsdom/Readability/DOMPurify failure, which we map
     //    to UNREADABLE. A null/empty result also maps to UNREADABLE (Req 3.4).
     const html = await rawResp.text();
-    const article = await extractReadable(html, rawUrl);
+    const article = await extractReadable(html, rawResp.url || rawUrl);
     if (!article || !article.textContent) {
       return errorResponse("UNREADABLE");
     }

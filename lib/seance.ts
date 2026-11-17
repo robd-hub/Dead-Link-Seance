@@ -231,8 +231,8 @@ export type ExampleDeadLink = { url: string; timestamp: string };
  */
 export const EXAMPLE_DEAD_LINKS: ExampleDeadLink[] = [
   { url: "https://www.google.com/reader/", timestamp: "20120601" },
-  { url: "https://vine.co/", timestamp: "20150601" },
-  { url: "https://plus.google.com/", timestamp: "20160601" },
+  { url: "http://www.geocities.com/", timestamp: "20090601" },
+  { url: "https://wave.google.com/about.html", timestamp: "20100601" },
 ];
 
 // ---------------------------------------------------------------------------
