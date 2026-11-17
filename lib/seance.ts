@@ -295,3 +295,8 @@ export type MediumResponse = {
   summary: string | null;
   causeOfDeath: string | null;
 };
+
+/** Response from `/api/reincarnate`: a modern rebuild of the dead page. */
+export type ReincarnateResponse =
+  | { ok: true; html: string }
+  | { ok: false; message: string };

@@ -566,3 +566,32 @@
   border: 0;
   background: #fff;
 }
+
+.rebornTab {
+  border-color: #7b3fe4;
+}
+
+.rebornTab[aria-selected="true"] {
+  color: #fff;
+  background: linear-gradient(135deg, #7b3fe4, #e0661b);
+  border-color: transparent;
+  box-shadow: 0 0 22px rgba(140, 60, 200, 0.55);
+}
+
+.rebornNote {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.linkButton {
+  min-height: 44px;
+  padding: 0 0.5rem;
+  font: inherit;
+  color: var(--candle);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
