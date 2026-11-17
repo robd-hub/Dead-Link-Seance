@@ -89,6 +89,7 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
   if (state.phase === "loading") {
     return (
       <main className={styles.main}>
+        <LoadingGhost />
         <p className={styles.status} role="status">
           Summoning… the spirits are searching the archive.
         </p>
@@ -129,7 +130,7 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
 
       {mediumLoading && (
         <p className={styles.status} role="status">
-          The medium is listening…
+          🔮 The medium is listening…
         </p>
       )}
 
@@ -164,11 +165,23 @@ function ResultsFromQuery() {
   return <Results key={`${url}|${timestamp ?? ""}`} url={url} timestamp={timestamp} />;
 }
 
+function LoadingGhost() {
+  return (
+    <svg className={styles.loadingGhost} width="110" height="132" viewBox="0 0 100 120" aria-hidden="true">
+      <path d="M50 4C24 4 10 24 10 50v62l13-10 13 10 14-10 14 10 13-10 13 10V50C90 24 76 4 50 4z" fill="rgba(240,240,255,0.92)" />
+      <ellipse cx="36" cy="48" rx="7" ry="10" fill="#1a1a2e" />
+      <ellipse cx="64" cy="48" rx="7" ry="10" fill="#1a1a2e" />
+      <ellipse cx="50" cy="74" rx="10" ry="8" fill="#1a1a2e" />
+    </svg>
+  );
+}
+
 export default function ResultsPage() {
   return (
     <Suspense
       fallback={
         <main className={styles.main}>
+          <LoadingGhost />
           <p className={styles.status} role="status">
             Summoning…
           </p>

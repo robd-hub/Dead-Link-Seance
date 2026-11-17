@@ -27,6 +27,7 @@ export default function Home() {
   const [value, setValue] = useState("");
   const [hint, setHint] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [summoning, setSummoning] = useState(false);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,7 +43,9 @@ export default function Home() {
     setError(null);
     const query = new URLSearchParams({ url });
     if (hint) query.set("timestamp", hint);
-    router.push(`/results?${query.toString()}`);
+    // The board shakes for a moment as the spirits are called.
+    setSummoning(true);
+    window.setTimeout(() => router.push(`/results?${query.toString()}`), 700);
   }
 
   return (
@@ -55,7 +58,15 @@ export default function Home() {
         </p>
       </header>
 
-      <section className={styles.board} aria-label="Ouija board">
+      <section
+        className={`${styles.board} ${summoning ? styles.summoning : ""}`}
+        aria-label="Ouija board"
+      >
+        <svg className={styles.planchette} viewBox="0 0 46 52" aria-hidden="true">
+          <path d="M23 2C10 2 2 16 2 30c0 12 8 20 21 20s21-8 21-20C44 16 36 2 23 2z" fill="#e8d2a6" stroke="#6b4a2a" strokeWidth="2" />
+          <circle cx="23" cy="24" r="8" fill="rgba(20,14,10,0.75)" stroke="#6b4a2a" strokeWidth="2" />
+          <circle cx="20" cy="21" r="2.5" fill="rgba(255,255,255,0.5)" />
+        </svg>
         <div className={styles.boardRow} aria-hidden="true">
           <span>YES</span>
           <span>☾ ✦ ☽</span>
@@ -88,7 +99,7 @@ export default function Home() {
             aria-describedby={error ? "dead-link-error" : undefined}
           />
           <button type="submit" className={styles.button}>
-            Summon
+            {summoning ? "Summoning…" : "Summon 👻"}
           </button>
         </form>
 
@@ -100,7 +111,7 @@ export default function Home() {
       </section>
 
       <section className={styles.examples} aria-label="Example dead links">
-        <p className={styles.examplesTitle}>Or call upon a famous departed page:</p>
+        <p className={styles.examplesTitle}>🕯️ Or call upon a famous departed page:</p>
         <ul className={styles.exampleList}>
           {EXAMPLE_DEAD_LINKS.map((ex) => (
             <li key={ex.url}>

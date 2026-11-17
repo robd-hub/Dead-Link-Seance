@@ -1,6 +1,8 @@
 /* Shared séance styles for the home (ouija board) and results pages. */
 
 .main {
+  position: relative;
+  z-index: 1;
   flex: 1;
   width: 100%;
   max-width: 760px;
@@ -16,14 +18,70 @@
 }
 
 .title {
-  font-size: clamp(2rem, 7vw, 3.25rem);
+  font-family: var(--font-creepster), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.6rem, 10vw, 4.5rem);
+  line-height: 1.05;
   letter-spacing: 0.04em;
-  color: var(--candle);
-  text-shadow: 0 0 18px rgba(232, 176, 75, 0.55), 0 0 42px rgba(232, 176, 75, 0.25);
+  color: #ff8a1f;
+  text-shadow: 0 0 18px rgba(255, 122, 26, 0.6), 0 0 48px rgba(140, 60, 200, 0.45);
+  animation: drip 5s infinite ease-in-out;
+}
+
+@keyframes drip {
+  0%, 92%, 100% { transform: none; }
+  94% { transform: translateX(-2px) skewX(-3deg); }
+  96% { transform: translateX(2px) skewX(3deg); }
+}
+
+/* Planchette that wanders over the letters on its own */
+.planchette {
+  position: absolute;
+  top: 3.1rem;
+  left: 10%;
+  width: 46px;
+  height: 52px;
+  pointer-events: none;
+  animation: wander 11s infinite ease-in-out;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+}
+
+@keyframes wander {
+  0% { transform: translate(0, 0) rotate(-8deg); }
+  20% { transform: translate(min(55vw, 420px), 6px) rotate(6deg); }
+  40% { transform: translate(min(25vw, 200px), -38px) rotate(-4deg); }
+  60% { transform: translate(min(60vw, 520px), -40px) rotate(10deg); }
+  80% { transform: translate(min(35vw, 280px), 8px) rotate(-6deg); }
+  100% { transform: translate(0, 0) rotate(-8deg); }
+}
+
+.summoning {
+  animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-3px, 2px) rotate(-0.5deg); }
+  50% { transform: translate(3px, -2px) rotate(0.5deg); }
+  75% { transform: translate(-2px, -1px); }
+}
+
+/* Loading ghost on the results page */
+.loadingGhost {
+  display: block;
+  margin: 2rem auto 1rem;
+  animation: float 2.2s infinite ease-in-out;
+  filter: drop-shadow(0 0 24px rgba(200, 210, 255, 0.7));
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
 }
 
 .tagline {
-  color: var(--muted);
+  color: #c9bba3;
+  text-shadow: 0 1px 6px #000, 0 0 12px #000;
   margin-top: 0.5rem;
 }
 
@@ -176,7 +234,8 @@
 }
 
 .card {
-  background: var(--card);
+  background: rgba(20, 20, 31, 0.92);
+  backdrop-filter: blur(3px);
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 1.5rem 1.25rem;
@@ -185,8 +244,25 @@
 
 .ghostCard {
   composes: card;
-  border-color: #4a3220;
-  box-shadow: 0 0 40px rgba(232, 176, 75, 0.1);
+  position: relative;
+  border-color: #6b4aa0;
+  background: linear-gradient(160deg, rgba(60, 40, 100, 0.55), rgba(20, 20, 31, 0.92));
+  box-shadow: 0 0 50px rgba(140, 100, 230, 0.35);
+  animation: appear 1.2s ease-out;
+}
+
+.ghostCard::before {
+  content: "👻";
+  position: absolute;
+  top: -1.4rem;
+  right: 1rem;
+  font-size: 2.2rem;
+  animation: float 2.5s infinite ease-in-out;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
 }
 
 .sectionLabel {
@@ -283,6 +359,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .board,
+  .title,
+  .planchette,
+  .summoning,
+  .loadingGhost,
   .status {
     animation: none;
   }
