@@ -177,7 +177,10 @@ export async function GET(request: Request): Promise<Response> {
     //    returns null on any jsdom/Readability/DOMPurify failure, which we map
     //    to UNREADABLE. A null/empty result also maps to UNREADABLE (Req 3.4).
     const html = await rawResp.text();
-    const article = await extractReadable(html, rawResp.url || rawUrl);
+    // Parse with the ORIGINAL url as the base so relative links like "/help"
+    // resolve to the dead site (then get re-routed through the séance),
+    // not to web.archive.org/help.
+    const article = await extractReadable(html, url);
     if (!article || !article.textContent) {
       return errorResponse("UNREADABLE");
     }

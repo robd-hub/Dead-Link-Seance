@@ -219,10 +219,19 @@ export function buildRawSnapshotUrl(timestamp: string, url: string): string {
 // Example dead links
 // ---------------------------------------------------------------------------
 
-export type ExampleDeadLink = { url: string; timestamp: string };
+export type ExampleDeadLink = {
+  url: string;
+  timestamp: string;
+  /** Display name on the tombstone. */
+  name: string;
+  /** "born–died" years, shown under the name. */
+  years: string;
+  /** A one-line epitaph. */
+  epitaph: string;
+};
 
 /**
- * Three famous discontinued products, each carrying a Timestamp_Hint (an
+ * Famous discontinued products, each carrying a Timestamp_Hint (an
  * 8-digit YYYYMMDD date from when the site was alive) chosen for extensive,
  * reliable Wayback coverage. Selecting one populates both the input URL and
  * the Timestamp_Hint on the home page.
@@ -230,9 +239,18 @@ export type ExampleDeadLink = { url: string; timestamp: string };
  * Validates: Requirements 1.3, 2.7
  */
 export const EXAMPLE_DEAD_LINKS: ExampleDeadLink[] = [
-  { url: "https://www.google.com/reader/", timestamp: "20120601" },
-  { url: "http://www.geocities.com/", timestamp: "20090601" },
-  { url: "https://wave.google.com/about.html", timestamp: "20100601" },
+  // Each of these was checked against the live archive and restores readable text.
+  { url: "https://www.google.com/reader/", timestamp: "20120601", name: "Google Reader", years: "2005–2013", epitaph: "Kept us up to date. Was not kept." },
+  { url: "http://www.geocities.com/", timestamp: "20090601", name: "GeoCities", years: "1994–2009", epitaph: "Under construction, forever." },
+  { url: "http://www.napster.com/", timestamp: "20000601", name: "Napster", years: "1999–2001", epitaph: "Music at Internet speed. Lawyers, faster." },
+  { url: "http://www.pets.com/", timestamp: "20000601", name: "Pets.com", years: "1998–2000", epitaph: "Survived by one sock puppet." },
+  { url: "https://wave.google.com/about.html", timestamp: "20100601", name: "Google Wave", years: "2009–2012", epitaph: "Nobody was quite sure what it was." },
+  { url: "http://del.icio.us/about/", timestamp: "20080601", name: "del.icio.us", years: "2003–2017", epitaph: "Tagged: gone, missed, rip." },
+  { url: "http://home.netscape.com/", timestamp: "19970601", name: "Netscape", years: "1994–2008", epitaph: "Lost the browser wars with dignity." },
+  { url: "http://www.orkut.com/About.aspx", timestamp: "20100601", name: "Orkut", years: "2004–2014", epitaph: "Big in Brazil. Bigger in our hearts." },
+  { url: "https://www.google.com/glass/start/", timestamp: "20140601", name: "Google Glass", years: "2013–2015", epitaph: "Saw the future. The future stared back." },
+  { url: "https://www.google.com/inbox/", timestamp: "20170601", name: "Inbox by Gmail", years: "2014–2019", epitaph: "Snoozed. Permanently." },
+  { url: "http://encarta.msn.com/", timestamp: "20050601", name: "Encarta", years: "1993–2009", epitaph: "Out-edited by volunteers." },
 ];
 
 // ---------------------------------------------------------------------------

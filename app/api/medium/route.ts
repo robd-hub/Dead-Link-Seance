@@ -91,7 +91,12 @@ export async function POST(request: Request): Promise<Response> {
       },
       20000,
     );
-    if (!res.ok) return NextResponse.json(FAILED);
+    if (!res.ok) {
+      // Log only the status and model (never the key or page text) so a
+      // misconfigured model shows up in the Vercel logs.
+      console.error(`medium: AI call failed with HTTP ${res.status} (model ${model})`);
+      return NextResponse.json(FAILED);
+    }
 
     const data = (await res.json()) as {
       choices?: { message?: { content?: unknown } }[];
