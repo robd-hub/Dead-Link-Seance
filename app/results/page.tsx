@@ -24,6 +24,7 @@ import {
   type LookupResponse,
   type LookupSuccess,
   type MediumResponse,
+  type ReincarnateResponse,
 } from "@/lib/seance";
 import styles from "../seance.module.css";
 
@@ -40,7 +41,13 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
   const [medium, setMedium] = useState<MediumResponse | null>(null);
   const [mediumLoading, setMediumLoading] = useState(false);
   // "auto" picks the original look for pages that kept very little text.
-  const [view, setView] = useState<"auto" | "readable" | "original">("auto");
+  const [view, setView] = useState<"auto" | "readable" | "original" | "reborn">("auto");
+  const [reborn, setReborn] = useState<
+    | { phase: "idle" }
+    | { phase: "loading" }
+    | { phase: "done"; html: string }
+    | { phase: "error"; message: string }
+  >({ phase: "idle" });
 
   useEffect(() => {
     if (!validUrl) return;
@@ -113,6 +120,32 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
   }
 
   const { page } = state;
+
+  async function reincarnate() {
+    if (state.phase !== "done") return;
+    setView("reborn");
+    setReborn({ phase: "loading" });
+    try {
+      const res = await fetch("/api/reincarnate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url,
+          title: state.page.title,
+          textContent: state.page.textContent,
+          year: state.page.snapshotDate.slice(0, 4),
+        }),
+      });
+      const data = (await res.json()) as ReincarnateResponse;
+      setReborn(
+        data.ok
+          ? { phase: "done", html: data.html }
+          : { phase: "error", message: data.message },
+      );
+    } catch {
+      setReborn({ phase: "error", message: "The spirit could not find a new body. Try again." });
+    }
+  }
   const thin = page.textContent.replace(/\s+/g, " ").trim().length < 700;
   const activeView = view === "auto" ? (thin ? "original" : "readable") : view;
   const year = page.snapshotDate.slice(0, 4);
@@ -170,9 +203,57 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
         >
           🖥️ As it looked in {year}
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeView === "reborn"}
+          className={`${styles.viewTab} ${styles.rebornTab}`}
+          onClick={() => (reborn.phase === "idle" ? reincarnate() : setView("reborn"))}
+        >
+          ✨ Reincarnate it today
+        </button>
       </div>
 
-      {activeView === "readable" ? (
+      {activeView === "reborn" ? (
+        reborn.phase === "done" ? (
+          <>
+            <div className={styles.timeWindow}>
+              <div className={styles.windowBar} aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <em>{page.title || url} · reborn today</em>
+              </div>
+              <iframe
+                className={styles.originalFrame}
+                srcDoc={reborn.html}
+                title={`${page.title || url}, reincarnated as a modern site`}
+                // Fully sandboxed: no scripts, no navigation, no network (CSP).
+                sandbox=""
+              />
+            </div>
+            <p className={styles.rebornNote}>
+              An AI imagined this relaunch from the old page&apos;s words. Each
+              summoning is different.{" "}
+              <button type="button" className={styles.linkButton} onClick={reincarnate}>
+                Reincarnate again
+              </button>
+            </p>
+          </>
+        ) : reborn.phase === "error" ? (
+          <div className={styles.card} role="alert" style={{ textAlign: "center" }}>
+            <p className={styles.summary}>{reborn.message}</p>
+            <button type="button" className={styles.linkButton} onClick={reincarnate}>
+              Try again
+            </button>
+          </div>
+        ) : (
+          <div className={styles.card} role="status" style={{ textAlign: "center" }}>
+            <LoadingGhost />
+            <p className={styles.status}>✨ The spirit is choosing a new body… (about 10 seconds)</p>
+          </div>
+        )
+      ) : activeView === "readable" ? (
         <article
           className={`${styles.card} ${styles.restored}`}
           // Sanitized server-side with DOMPurify (lib/seance-server.ts).
