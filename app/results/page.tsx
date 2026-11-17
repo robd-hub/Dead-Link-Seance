@@ -39,6 +39,8 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
   );
   const [medium, setMedium] = useState<MediumResponse | null>(null);
   const [mediumLoading, setMediumLoading] = useState(false);
+  // "auto" picks the original look for pages that kept very little text.
+  const [view, setView] = useState<"auto" | "readable" | "original">("auto");
 
   useEffect(() => {
     if (!validUrl) return;
@@ -111,6 +113,11 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
   }
 
   const { page } = state;
+  const thin = page.textContent.replace(/\s+/g, " ").trim().length < 700;
+  const activeView = view === "auto" ? (thin ? "original" : "readable") : view;
+  const year = page.snapshotDate.slice(0, 4);
+  // `if_` asks the Wayback Machine for the page without its own toolbar.
+  const originalSrc = `https://web.archive.org/web/${page.snapshotTimestamp}if_/${url}`;
   const showGhost =
     medium?.ok === true && !!medium.summary?.trim() && !!medium.causeOfDeath?.trim();
 
@@ -144,11 +151,52 @@ function Results({ url, timestamp }: { url: string; timestamp: string | null }) 
         </section>
       )}
 
-      <article
-        className={`${styles.card} ${styles.restored}`}
-        // Sanitized server-side with DOMPurify (lib/seance-server.ts).
-        dangerouslySetInnerHTML={{ __html: page.content }}
-      />
+      <div className={styles.viewTabs} role="tablist" aria-label="How to view the page">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeView === "readable"}
+          className={styles.viewTab}
+          onClick={() => setView("readable")}
+        >
+          📜 Readable text
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeView === "original"}
+          className={styles.viewTab}
+          onClick={() => setView("original")}
+        >
+          🖥️ As it looked in {year}
+        </button>
+      </div>
+
+      {activeView === "readable" ? (
+        <article
+          className={`${styles.card} ${styles.restored}`}
+          // Sanitized server-side with DOMPurify (lib/seance-server.ts).
+          dangerouslySetInnerHTML={{ __html: page.content }}
+        />
+      ) : (
+        <div className={styles.timeWindow}>
+          <div className={styles.windowBar} aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <em>{url}</em>
+          </div>
+          <iframe
+            className={styles.originalFrame}
+            src={originalSrc}
+            title={`${page.title || url} as it looked in ${year}`}
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            // No top navigation, no forms: old pages can't drag the visitor away.
+            sandbox="allow-scripts allow-same-origin allow-popups"
+          />
+        </div>
+      )}
 
       <div className={styles.actions}>
         <Link href="/">Summon another</Link>
