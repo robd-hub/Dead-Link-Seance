@@ -30,7 +30,7 @@ import {
   type LookupSuccess,
   type LookupError,
 } from "@/lib/seance";
-import { fetchWithTimeout, extractReadable } from "@/lib/seance-server";
+import { fetchWithTimeout, extractReadable, rewriteForAfterlife } from "@/lib/seance-server";
 
 /** Vercel function-duration ceiling (Hobby). Fits two sequential 20s ops (~40s) with margin. */
 export const maxDuration = 60;
@@ -177,7 +177,10 @@ export async function GET(request: Request): Promise<Response> {
     //    returns null on any jsdom/Readability/DOMPurify failure, which we map
     //    to UNREADABLE. A null/empty result also maps to UNREADABLE (Req 3.4).
     const html = await rawResp.text();
-    const article = await extractReadable(html, rawResp.url || rawUrl);
+    // Parse with the ORIGINAL url as the base so relative links like "/help"
+    // resolve to the dead site (then get re-routed through the séance),
+    // not to web.archive.org/help.
+    const article = await extractReadable(html, url);
     if (!article || !article.textContent) {
       return errorResponse("UNREADABLE");
     }
@@ -204,7 +207,7 @@ export async function GET(request: Request): Promise<Response> {
     const success: LookupSuccess = {
       ok: true,
       title: article.title,
-      content: article.content,
+      content: rewriteForAfterlife(article.content, snapshotTimestamp),
       textContent: article.textContent,
       snapshotTimestamp,
       snapshotDate,

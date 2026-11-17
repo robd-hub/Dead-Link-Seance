@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Creepster, Geist } from "next/font/google";
+import SpookyScene from "./SpookyScene";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const creepster = Creepster({
+  variable: "--font-creepster",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -19,8 +26,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={geistSans.variable}>
-      <body>{children}</body>
+    <html lang="en" className={`${geistSans.variable} ${creepster.variable}`}>
+      <body>
+        <SpookyScene />
+        {children}
+      </body>
     </html>
   );
 }
