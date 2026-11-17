@@ -24,7 +24,7 @@ Lean Next.js App Router + TypeScript build for a Halloween Wayback-restore app. 
     - `IN_THEME_MESSAGES` allowlist + `msg(kind)` accessor (`INVALID_URL`, `NOT_FOUND`, `TIMEOUT`, `UNREACHABLE`, `UNREADABLE`) and `mapErrorToInTheme(err)` classifying thrown values to the allowlist, never leaking raw text
     - `selectSnapshot(snapshots, hint?)`: closest-to-hint when an 8-digit `YYYYMMDD` hint is provided, else max timestamp; `null` for an empty list
     - `buildRawSnapshotUrl(timestamp, url)`: `https://web.archive.org/web/<ts>id_/<url>`
-    - `EXAMPLE_DEAD_LINKS`: three `{url, timestamp}` pairs (Google Reader `20120601`, Vine `20150601`, Google+ `20160601`)
+    - `EXAMPLE_DEAD_LINKS`: three `{url, timestamp}` pairs (Google Reader `20120601`, GeoCities `20090601`, Google Wave `20100601`)
     - Shared response-envelope types (`LookupSuccess`, `LookupError`, `MediumResponse`)
     - _Requirements: 1.3, 1.6, 2.2, 2.3, 2.7, 3.1, 6.1, 6.2, 6.3, 6.4, 6.5_
 

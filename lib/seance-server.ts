@@ -126,6 +126,9 @@ export async function extractReadable(
     const purify = DOMPurify(dom.window as unknown as Parameters<typeof DOMPurify>[0]);
     const safeContent = purify.sanitize(article.content ?? "", {
       USE_PROFILES: { html: true },
+      // Old pages often carry login or search forms; a restored page should
+      // never let a visitor type into or submit a form to a third party.
+      FORBID_TAGS: ["form", "input", "button", "select", "textarea", "iframe"],
     }) as string;
 
     // Plain text: prefer Readability's textContent; if empty, derive it from

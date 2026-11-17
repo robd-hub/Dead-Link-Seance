@@ -18,8 +18,8 @@ import styles from "./seance.module.css";
 
 const EXAMPLE_NAMES: Record<string, string> = {
   "https://www.google.com/reader/": "Google Reader (2012)",
-  "https://vine.co/": "Vine (2015)",
-  "https://plus.google.com/": "Google+ (2016)",
+  "http://www.geocities.com/": "GeoCities (2009)",
+  "https://wave.google.com/about.html": "Google Wave (2010)",
 };
 
 export default function Home() {
